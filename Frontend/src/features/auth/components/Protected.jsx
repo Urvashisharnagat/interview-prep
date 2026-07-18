@@ -1,18 +1,18 @@
-import React, { Children } from 'react'
+
 import { useAuth } from '../hooks/useAuth'
-import { Navigate } from 'react-router'
+import { Navigate} from 'react-router'
 
 const Protected = ({children}) => {
-
+    console.log("protected component loaded");
+    
     const {loading, user} = useAuth()
+    
 
     if(loading){
-      return(
-        <main><h1>Loading...</h1></main>
-      )
+      return (<main><h1>Loading...</h1></main>)
     }
     if(!user){
-        <Navigate to={'/login'} />
+        return <Navigate to={'/login'} />
         
     }
     return children
