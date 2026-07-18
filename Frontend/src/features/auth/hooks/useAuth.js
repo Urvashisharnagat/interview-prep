@@ -24,7 +24,7 @@ export const useAuth = ()=>{
     const handleRegister = async ({username,email,password})=>{
         setloading(true)
         try{
-            const data = await  register({username,email,password})
+            const data = await  register(username,email,password)
             setuser(data.user)
         }
         catch(err){
