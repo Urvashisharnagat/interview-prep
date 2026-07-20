@@ -13,7 +13,7 @@ const InterviewReportSchema = z.object({
 
     technicalQuestions: z.array(
         z.object({
-            questions: z.string()
+            question: z.string()
                 .describe('The technical question can be asked in the interview.'),
 
             intention: z.string()
@@ -26,7 +26,7 @@ const InterviewReportSchema = z.object({
 
     behavioralQuestions: z.array(
         z.object({
-            questions: z.string()
+            question: z.string()
                 .describe('The behavioral question can be asked in the interview.'),
 
             intention: z.string()
