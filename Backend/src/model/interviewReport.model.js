@@ -83,6 +83,11 @@ const InterviewReportSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"users"
+    },
+    title:{
+        type:String,
+        required:[false, 'title is required'],
+        default: 'Interview Report'
     }
 },{ timestamps: true });
 

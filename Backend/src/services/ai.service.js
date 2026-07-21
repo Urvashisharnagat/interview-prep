@@ -58,7 +58,10 @@ const InterviewReportSchema = z.object({
             tasks: z.array(z.string())
                 .describe('The tasks to be done for the preparation plan for the day.')
         })
-    )
+    ),
+  
+    title:z.string().describe('the tiltle of the job for which the interview report is genrated')
+
 });
 
 

@@ -1,0 +1,39 @@
+import axios from 'axios'
+
+const api = axios.create({
+    baseURL:'http://localhost:3000',
+    withCredentials:true
+})
+
+/**
+ * @description generate Interview Report 
+ */
+export const generateInterviewReport = async ({jobDescription, selfDescription, resumefile})=>{
+    const formData = new FormData()
+    formData.append("selfDescription", selfDescription)
+    formData.append("jobDescription", jobDescription)
+    // backend expects the file field name to be "resume"
+    formData.append("resume", resumefile)
+
+    const response = await api.post('/api/interview/', formData)
+
+    return response.data
+}
+
+/**
+ * @description get Interview Report by interviwID
+ */
+export const getInterviewReport =async ({interviewID})=>{
+    const response = await api.get(`/api/interview/report/${interviewID}`)
+
+    return response.data
+}
+
+/**
+ * @description get All interview report of logged in user
+ */
+export const getAllInterviewReports =async ()=>{
+    const response = await api.get('/api/interview/getAllInterviewReports')
+
+    return response.data
+}

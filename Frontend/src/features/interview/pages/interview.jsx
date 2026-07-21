@@ -1,83 +1,15 @@
 import React, { useState } from 'react'
 import '../styles/interview.scss'
+import {useInterview} from '../hooks/UseInterview'
 
 const Interview = () => {
   const [activeTab, setActiveTab] = useState('behavioral')
   const [activeIndex, setActiveIndex] = useState(0)
 
-  // Sample data
-  const reportData = {
-    "_id": "6a5dbd11004e8a1300857941",
-    "matchScore": 94,
-    "behavioralQuestions": [
-      {
-        "question": "During your internship at XYZ Technologies, did you ever encounter a situation where you couldn't meet a deadline? How did you handle it and communicate it to your team?",
-        "intention": "Assess accountability, time management, and communication skills in a professional setting.",
-        "answer": "Use the STAR method (Situation, Task, Action, Result). Describe the timeline, the bottleneck, how you proactively notified your mentor or manager ahead of time with a proposed solution or staging of features, and the positive outcome where trust and collaboration were maintained."
-      },
-      {
-        "question": "You built an AI Resume Analyzer and an E-Commerce platform. Describe a technical challenge you faced while working on either project and how you went about solving it.",
-        "intention": "Evaluate problem-solving capabilities, self-direction, and technical curiosity.",
-        "answer": "Describe a specific roadblock (such as PDF parsing issues in the resume analyzer or state syncing in the e-commerce cart). Explain your structured debugging process (e.g., using Postman, reading documentation, isolated unit testing) and the engineering solution you eventually implemented."
-      }
-    ],
-    "skillGaps": [
-      {
-        "skill": "TypeScript",
-        "severity": "medium"
-      },
-      {
-        "skill": "Cloud Platforms (AWS/GCP)",
-        "severity": "low"
-      }
-    ],
-    "preparationPlan": [
-      {
-        "day": 1,
-        "focus": "JavaScript Fundamentals & Advanced React concepts",
-        "tasks": [
-          "Review closures, prototypes, asynchronous event loop in JavaScript.",
-          "Study React hook optimizations (useMemo, useCallback) and component rendering lifecycle."
-        ]
-      },
-      {
-        "day": 2,
-        "focus": "Backend & Database Optimization",
-        "tasks": [
-          "Practice writing complex Express.js middlewares for logging, validation, and authentication.",
-          "Review MongoDB aggregation pipelines, indexing, and compare SQL vs NoSQL schema design."
-        ]
-      },
-      {
-        "day": 3,
-        "focus": "TypeScript Integration",
-        "tasks": [
-          "Take a TypeScript crash course and practice converting a JavaScript/React component into typed TypeScript.",
-          "Learn about interfaces, types, generics, and compilation configurations."
-        ]
-      },
-      {
-        "day": 4,
-        "focus": "API Security & Systems Basics",
-        "tasks": [
-          "Study security best practices (CORS, Helmet, Rate Limiting, HttpOnly cookies).",
-          "Review basic System Design concepts like load balancing, caching (Redis), and REST API design rules."
-        ]
-      },
-      {
-        "day": 5,
-        "focus": "DSA Brush-up & Mock Interviews",
-        "tasks": [
-          "Solve 3-5 medium-difficulty problems on Arrays, Strings, and Trees.",
-          "Practice explaining resume projects using the STAR method in front of a mirror or with a peer."
-        ]
-      }
-    ],
-    "technicalQquestions": []
-  }
-
-  const currentBehavioralQuestion = reportData.behavioralQuestions?.[activeIndex]
-  const currentTechnicalQuestion = reportData.technicalQquestions?.[activeIndex]
+  const {report} = useInterview()
+  
+  const currentBehavioralQuestion = report.behavioralQuestions?.[activeIndex]
+  const currentTechnicalQuestion = report.technicalQquestions?.[activeIndex]
 
   const getSeverityColor = (severity) => {
     switch (severity?.toLowerCase()) {
@@ -100,8 +32,8 @@ const Interview = () => {
           <div className="sidebar-section">
             <h3 className="section-title">Technical Questions</h3>
             <div className="questions-list">
-              {reportData.technicalQquestions && reportData.technicalQquestions.length > 0 ? (
-                reportData.technicalQquestions.map((_, index) => (
+              {report.technicalQquestions && report.technicalQquestions.length > 0 ? (
+                report.technicalQquestions.map((_, index) => (
                   <button
                     key={index}
                     className={`question-item ${activeTab === 'technical' && activeIndex === index ? 'active' : ''}`}
@@ -122,7 +54,7 @@ const Interview = () => {
           <div className="sidebar-section">
             <h3 className="section-title">Behavioral Questions</h3>
             <div className="questions-list">
-              {reportData.behavioralQuestions?.map((_, index) => (
+              {report.behavioralQuestions?.map((_, index) => (
                 <button
                   key={index}
                   className={`question-item ${activeTab === 'behavioral' && activeIndex === index ? 'active' : ''}`}
@@ -140,7 +72,7 @@ const Interview = () => {
           <div className="sidebar-section">
             <h3 className="section-title">📋 Road Map</h3>
             <div className="roadmap-list">
-              {reportData.preparationPlan?.map((plan, index) => (
+              {report.preparationPlan?.map((plan, index) => (
                 <div key={index} className="roadmap-item">
                   <span className="day-badge">Day {plan.day}</span>
                   <p className="day-focus">{plan.focus}</p>
@@ -155,7 +87,7 @@ const Interview = () => {
           <div className="content-header">
             <div className="match-score">
               <div className="score-circle">
-                <span className="score-value">{reportData.matchScore}</span>
+                <span className="score-value">{report.matchScore}</span>
                 <span className="score-label">% Match</span>
               </div>
             </div>
@@ -212,7 +144,7 @@ const Interview = () => {
         <aside className="skill-gaps-sidebar">
           <h3 className="sidebar-title">🎯 Skill Gaps</h3>
           <div className="skill-gaps-container">
-            {reportData.skillGaps?.map((skillGap, index) => (
+            {report.skillGaps?.map((skillGap, index) => (
               <div key={index} className="skill-gap-item">
                 <div className="skill-header">
                   <span className="skill-name">{skillGap.skill}</span>
@@ -238,7 +170,7 @@ const Interview = () => {
 
           <div className="preparation-summary">
             <h4>Preparation Days</h4>
-            <span className="days-count">{reportData.preparationPlan?.length || 0}</span>
+            <span className="days-count">{report.preparationPlan?.length || 0}</span>
           </div>
         </aside>
       </div>
