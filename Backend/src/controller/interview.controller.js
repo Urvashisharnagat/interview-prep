@@ -1,5 +1,5 @@
 // `pdf-parse` exports a function directly
-const pdfParse = require('pdf-parse')
+const { PDFParse } = require('pdf-parse');
 const interviewReportModel = require('../model/interviewReport.model')
 const generateInterviewReport = require('../services/ai.service')
 
@@ -7,35 +7,31 @@ const generateInterviewReport = require('../services/ai.service')
  * @description genrates interview report
  */
 async function generateInterviewReportController(req,res){
-    const resumefile = req.file
-    if (!resumefile) {
-        return res.status(400).json({ message: 'No resume file uploaded' })
-    }
-
-    if (!pdfParse) {
-        console.error('pdf-parse module is not available')
-        return res.status(500).json({ message: 'PDF parsing not available on server' })
-    }
-
-    // parse PDF buffer safely
-    let pdfData
+    let resumeContent = null
     try {
-        pdfData = await new pdfParse.PDFParse(req.file.buffer)
-    } catch (err) {
-        console.error('Error parsing PDF:', err)
-        return res.status(400).json({ message: 'Failed to parse uploaded PDF' })
-    }
+    const parser = new PDFParse({data: req.file.buffer})
 
-    const resumeContent = pdfData && typeof pdfData.text === 'string' ? pdfData.text.trim() : ''
+    resumeContent = await parser.getText()
+
+
     if (!resumeContent) {
-        console.warn('No text extracted from uploaded resume PDF')
-        return res.status(400).json({ message: 'Uploaded resume PDF contains no extractable text. Use a searchable PDF.' })
+        return res.status(400).json({
+            message: "Uploaded PDF contains no text."
+        });
     }
+    // console.log(resumeContent.text);
+    
 
+} catch (err) {
+    console.error(err);
+    return res.status(400).json({
+        message: "Invalid PDF"
+    });
+}
     const {selfDescription, jobDescription} = req.body
 
     const interviewReprtByAI = await generateInterviewReport({
-        resume: resumeContent,
+        resume: resumeContent.text,
         selfDescription,
         jobDescription
     })
@@ -51,7 +47,7 @@ async function generateInterviewReportController(req,res){
 
     const interviewReport = await interviewReportModel.create({
         user: req.user.id,
-        resume: resumeContent,
+        resume: resumeContent.text,
         selfDescription,
         jobDescription,
         title,
@@ -74,10 +70,11 @@ async function generateInterviewReportController(req,res){
  * @description get interview report by interviewID
  */
 async function getIerviewReportByIDController(req,res) {
-    const {interviewID} = req.params
+    const {reportID} = req.params
+    console.log("ID received from URL:", reportID);
     const interviewReport =await interviewReportModel.findOne({
-        _id:interviewID,
-        user:req.user.id
+        _id:reportID,
+        // user:req.user.id
     })
     if(!interviewReport){
         return res.status(404).json({
@@ -94,7 +91,7 @@ async function getIerviewReportByIDController(req,res) {
  * @description get all generated reports by logged in user
  */
 async function getAllInterviewReportController(req,res){
-    const interviewReports =await interviewReportModel.find({user:req.user.id}).sort({createdAt:-1}).select(-resume, -selfDescription, -jobDescription, -__v,-technicalQquestions, -behavioralQuestions,-skillGaps,-preparationPlan)
+    const interviewReports =await interviewReportModel.find({user:req.user.id}).sort({createdAt:-1}).select("-resume -selfDescription -jobDescription -__v -technicalQquestions -behavioralQuestions -skillGaps -preparationPlan")
 
     return res.status(200).json({
         message:"report fetched successfully",

@@ -23,8 +23,8 @@ export const generateInterviewReport = async ({jobDescription, selfDescription, 
 /**
  * @description get Interview Report by interviwID
  */
-export const getInterviewReport =async ({interviewID})=>{
-    const response = await api.get(`/api/interview/report/${interviewID}`)
+export const getInterviewReport =async ({reportID})=>{
+    const response = await api.get(`/api/interview/report/${reportID}`)
 
     return response.data
 }

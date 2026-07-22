@@ -1,5 +1,6 @@
-import { useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { InterviewContext } from "../Interview.context";
+import { useParams } from "react-router";
 import {
   generateInterviewReport,
   getInterviewReport,
@@ -17,53 +18,56 @@ export const useInterview = () => {
 
   const { loading, setloading, report, setreport, reports, setreports } = context;
 
-  const generateReport = async ({ selfDescription, jobDescription, resumefile }) => {
-    setloading(true); 
+  const generateReport = useCallback(async ({ selfDescription, jobDescription, resumefile }) => {
+    setloading(true)
     try {
-    
       const response = await generateInterviewReport({
         selfDescription,
         jobDescription,
         resumefile,
-      });
-      // backend returns `interviewReport`; be tolerant of capitalization
+      })
       const interviewReport = response.interviewReport || response.InterviewReport || null
-      setreport(interviewReport);
+      setreport(interviewReport)
       return interviewReport
     } catch (error) {
-      console.error("Error generating report:", error);
+      console.error("Error generating report:", error)
     } finally {
-      setloading(false);
+      setloading(false)
     }
-  };
+  }, [setloading, setreport])
 
-  const getReport = async ({ interviewID }) => {
-    setloading(true); 
+  const getReport = useCallback(async ({ reportID }) => {
+    setloading(true)
     try {
-    
-      const response = await getInterviewReport({ interviewID });
+      const response = await getInterviewReport({ reportID })
       const interviewReport = response.interviewReport || response.InterviewReport || null
-      setreport(interviewReport);
+      setreport(interviewReport)
     } catch (error) {
-      console.error("Error fetching report:", error);
+      console.error("Error fetching report:", error)
     } finally {
-      setloading(false);
+      setloading(false)
     }
-  };
+  }, [setloading, setreport])
 
-  const getAllReport = async () => {
-    setloading(true);
+  const getAllReport = useCallback(async () => {
+    setloading(true)
     try {
-    
-      const response = await getAllInterviewReports();
-      setreports(response.interviewReports || response.interviewReports || []);
+      const response = await getAllInterviewReports()
+      setreports(response.interviewReports || response.InterviewReports || [])
     } catch (error) {
-      console.error("Error fetching all reports:", error);
+      console.error("Error fetching all reports:", error)
     } finally {
-      setloading(false);
+      setloading(false)
     }
-  };
+  }, [setloading, setreports])
 
+  const {reportID} = useParams()
+  console.log("reportID:", reportID);
+
+  useEffect(()=>{
+    if(!reportID) return;
+    getReport({reportID})
+  },[reportID])
 
   return {
     loading,

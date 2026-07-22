@@ -6,8 +6,10 @@ const Interview = () => {
   const [activeTab, setActiveTab] = useState('behavioral')
   const [activeIndex, setActiveIndex] = useState(0)
 
-  const {report} = useInterview()
   
+  const {report, getReport} = useInterview()
+  
+
   const currentBehavioralQuestion = report.behavioralQuestions?.[activeIndex]
   const currentTechnicalQuestion = report.technicalQquestions?.[activeIndex]
 

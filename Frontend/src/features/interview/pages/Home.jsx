@@ -1,16 +1,20 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import '../styles/home.scss'
 import { useInterview } from '../hooks/useInterview' // Standardized import casing
 import { useNavigate } from 'react-router'
 
 const Home = () => {
-  const { loading, generateReport } = useInterview()
+  const { loading, generateReport, reports, getAllReport } = useInterview()
   const [jobDescription, setJobDescription] = useState('')
   const [selfDescription, setSelfDescription] = useState('') // Standard camelCase
   const [selectedFile, setSelectedFile] = useState(null) // Added state to track file selection & display name
   const resumeInputRef = useRef(null)
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    getAllReport()
+  }, [])
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -33,7 +37,6 @@ const Home = () => {
         resumefile,
       })
 
-      // Navigate safely if the report object is returned
       if (data?._id) {
         navigate(`/interview/${data._id}`)
       }
@@ -41,7 +44,8 @@ const Home = () => {
       console.error('Failed to generate report:', err)
     }
   }
-  if(loading){
+
+  if (loading) {
     return (
       <main>
         <h1>Loading...</h1>
@@ -120,12 +124,52 @@ const Home = () => {
               onClick={handleGenerateReport}
               disabled={loading}
             >
-              ✨ Generate Interview Strategy'
+              ✨ Generate Interview Strategy
             </button>
             <p className="security-notice">🔒 ENTERPRISE-GRADE AI SECURITY ENCRYPTION ACTIVE</p>
           </div>
         </div>
       </div>
+
+      <section className="report-list-section">
+        <div className="section-header list-header">
+          <h2>Your Generated Reports</h2>
+          <p>Review all reports generated from your account and open any one to continue working.</p>
+        </div>
+
+        {reports?.length ? (
+          <div className="reports-grid">
+            {reports.map((item) => {
+              const id = item._id || item.id || item.reportID || 'unknown'
+              const title = item.title || item.jobDescription || `Report ${id.slice?.(0, 6)}`
+              const score = item.matchScore ?? item.score ?? null
+              const createdAt = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : null
+
+              return (
+                <button
+                  type="button"
+                  key={id}
+                  className="report-card"
+                  onClick={() => navigate(`/interview/${id}`)}
+                >
+                  <div className="card-top">
+                    <h3>{title}</h3>
+                    {score !== null && <span className="score">{Math.round(score)}%</span>}
+                  </div>
+                  {createdAt && <p className="created-at">Created: {createdAt}</p>}
+                  <p className="report-summary">
+                    {item.summary || item.selfDescription || 'No summary available.'}
+                  </p>
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="empty-report-list">
+            <p>No generated reports yet. Create one to see it here.</p>
+          </div>
+        )}
+      </section>
     </main>
   )
 }
