@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import '../styles/interview.scss'
+import {useParams} from 'react-router'
 import {useInterview} from '../hooks/UseInterview'
 
 const Interview = () => {
@@ -7,7 +8,12 @@ const Interview = () => {
   const [activeIndex, setActiveIndex] = useState(0)
 
   
-  const {report, getReport} = useInterview()
+  const {report, getReport,generateResumePdfHook,loading} = useInterview()
+  const {reportID} = useParams()
+  
+
+
+  console.log('cheak :',reportID);
   
 
   const currentBehavioralQuestion = report.behavioralQuestions?.[activeIndex]
@@ -24,6 +30,13 @@ const Interview = () => {
       default:
         return '#808080'
     }
+  }
+  if(loading){
+    return (
+      <main>
+        <h1>Loading...</h1>
+      </main>
+    )
   }
 
   return (
@@ -174,7 +187,11 @@ const Interview = () => {
             <h4>Preparation Days</h4>
             <span className="days-count">{report.preparationPlan?.length || 0}</span>
           </div>
+          <button onClick={()=>{
+            
+            generateResumePdfHook(reportID)}} className='button primary-btn'>Download Resume</button>
         </aside>
+        
       </div>
     </main>
   )

@@ -5,6 +5,7 @@ import {
   generateInterviewReport,
   getInterviewReport,
   getAllInterviewReports,
+  generateResumePdf
 } from "../services/Interview.api";
 
 // 1. Removed `async` keyword here
@@ -60,10 +61,63 @@ export const useInterview = () => {
       setloading(false)
     }
   }, [setloading, setreports])
+  
+//  const generateResumePdfHook = ({reportID}) => {
+//   const downloadResume = async (reportID, fileName = `resume_${reportID}.pdf`) => {
+//     setLoading(true);
+
+//     try {
+//       // 1. Call your existing API layer function
+//       const blobData = await generateResumePdf({ reportID });
+
+//       // 2. Create a temporary local URL for the Blob object
+//       const downloadUrl = window.URL.createObjectURL(new Blob([blobData], { type: 'application/pdf' }));
+
+//       // 3. Create a temporary invisible anchor element to trigger download
+//       const link = document.createElement('a');
+//       link.href = downloadUrl;
+//       link.setAttribute('download', fileName);
+//       document.body.appendChild(link);
+      
+//       // 4. Trigger click and clean up DOM/memory
+//       link.click();
+//       link.parentNode.removeChild(link);
+//       window.URL.revokeObjectURL(downloadUrl);
+
+//     } catch (err) {
+//       console.error('PDF Download Error:', err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return { downloadResume, loading};
+//   }; 
+
+  const generateResumePdfHook = async (reportID)=>{
+    setloading(true)
+    let response = null
+
+    try{
+      response = await generateResumePdf({reportID})
+      const url = window.URL.createObjectURL(new Blob([response], { type: 'application/pdf' }))
+      const link = document.createElement('a');
+      link.href = url
+      link.setAttribute('download', `resume_${reportID}.pdf`);
+      document.body.appendChild(link)
+      link.click()
+    }
+    catch(error){
+      console.log(error);
+      
+    }
+    finally{
+      setloading(false)
+    }
+
+  } 
 
   const {reportID} = useParams()
-  console.log("reportID:", reportID);
-
   useEffect(()=>{
     if(!reportID) return;
     getReport({reportID})
@@ -76,5 +130,6 @@ export const useInterview = () => {
     generateReport,
     getReport,
     getAllReport,
+    generateResumePdfHook
   };
 };

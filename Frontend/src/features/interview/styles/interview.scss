@@ -8,9 +8,11 @@
     max-width: 1600px;
     margin: 0 auto;
     display: grid;
+    height: 100%;
     grid-template-columns: 280px 1fr 320px;
     gap: 24px;
     align-items: start;
+    position: relative;
 
     @media (max-width: 1200px) {
       grid-template-columns: 1fr;
@@ -264,6 +266,11 @@
       padding: 20px;
       backdrop-filter: blur(10px);
       height: fit-content;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap:10px;
 
       @media (max-width: 1200px) {
         grid-column: 1 / -1;
@@ -283,6 +290,7 @@
         flex-direction: column;
         gap: 16px;
         margin-bottom: 24px;
+        width: 100%;
 
         .skill-gap-item {
           background: rgba(40, 40, 40, 0.4);
@@ -341,6 +349,7 @@
         border-radius: 8px;
         padding: 14px;
         text-align: center;
+        width: 100%;
 
         h4 {
           font-size: 12px;
@@ -358,6 +367,13 @@
           color: #e60052;
         }
       }
+      .button{
+        width: 100%;
+        background-color: #e60052;
+        color: #e0e0e0;
+      }
     }
+    
+    
   }
 }

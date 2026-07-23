@@ -1,7 +1,7 @@
 // `pdf-parse` exports a function directly
 const { PDFParse } = require('pdf-parse');
 const interviewReportModel = require('../model/interviewReport.model')
-const generateInterviewReport = require('../services/ai.service')
+const {generateInterviewReport, generateResumepdf} = require('../services/ai.service')
 
 /**
  * @description genrates interview report
@@ -99,8 +99,44 @@ async function getAllInterviewReportController(req,res){
     })
 }
 
+/**
+ * @description controller to generate resume PDF through resume, selfDescription,jobDescription
+ */
+async function generateResumePDFController(req, res) {
+  try {
+    const { reportID } = req.params;
+
+    const interviewReport = await interviewReportModel.findOne({ _id: reportID });
+    if (!interviewReport) {
+      return res.status(404).json({
+        message: 'interview Report not found'
+      });
+    }
+
+    const { resume, selfDescription, jobDescription } = interviewReport;
+
+    const PdfBuffer = await generateResumepdf({ resume, selfDescription, jobDescription });
+
+    // FIX 1: Correct semicolon ';' after attachment and add explicit Content-Length
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="resume_${reportID}.pdf"`,
+      "Content-Length": PdfBuffer.length
+    });
+
+    // FIX 2: Use res.end() instead of res.send() to avoid UTF-8 string encoding
+    return res.end(PdfBuffer);
+
+  } catch (error) {
+    console.error("Resume generation error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+
 module.exports = {
     generateInterviewReportController,
     getIerviewReportByIDController,
-    getAllInterviewReportController
+    getAllInterviewReportController,
+    generateResumePDFController
 }
