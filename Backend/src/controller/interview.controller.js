@@ -128,8 +128,12 @@ async function generateResumePDFController(req, res) {
     return res.end(PdfBuffer);
 
   } catch (error) {
-    console.error("Resume generation error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("Resume generation error detailed:", error);
+    return res.status(500).json({ 
+      message: "Internal server error", 
+      error: error.message,
+      stack: error.stack 
+    });
   }
 }
 

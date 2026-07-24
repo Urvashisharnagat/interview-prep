@@ -133,29 +133,39 @@ async function generatePdfByHTML(htmlContent) {
 
   try {
     browser = await puppeteer.launch({
-      headless: 'new', // 👈 FIX 1: Render cloud container ke liye mandatory hai
+      headless: 'new', // Ya true
       userDataDir: uniqueUserDataDir,
       args: [
         '--no-sandbox', 
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--single-process', // 👈 FIX 2: Render ki 512MB RAM limit ke andar rakhta hai
-        '--no-zygote'
+        '--disable-gpu'
+        // ❌ Windows par '--single-process' MAT USE KAREIN, yeh Target Closed crash deta hai
       ]
     });
 
     const page = await browser.newPage();
-    
-    // Aapka exact content setup logic (Strictly Unchanged)
+
+    // Navigation timeout
+    page.setDefaultNavigationTimeout(15000);
+
+    // Fast loading without infinite hangs
     await page.setContent(htmlContent, { 
-      waitUntil: 'load',
-      timeout: 15000
+      waitUntil: 'domcontentloaded', 
+      timeout: 15000 
     });
 
-    // Aapka fonts wait logic (Blank PDF prevention - Strictly Unchanged)
-    await page.evaluateHandle('document.fonts.ready');
+    // Safe Font Wait (Aapka blank PDF prevention)
+    try {
+      await Promise.race([
+        page.evaluateHandle('document.fonts.ready'),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Font timeout')), 3000))
+      ]);
+    } catch (fontErr) {
+      console.warn("Font wait timeout, continuing PDF render...");
+    }
 
+    // Print to PDF
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
@@ -171,7 +181,7 @@ async function generatePdfByHTML(htmlContent) {
     if (browser) {
       await browser.close();
     }
-    // Safe folder cleanup (Crash-proof)
+    // Temp folder cleanup
     try {
       if (fs.existsSync(uniqueUserDataDir)) {
         fs.rmSync(uniqueUserDataDir, { recursive: true, force: true });
