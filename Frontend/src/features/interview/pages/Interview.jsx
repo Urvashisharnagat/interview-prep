@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import '../styles/interview.scss'
-import {useParams} from 'react-router'
+import {useParams} from 'react-router-dom'
 import {UseInterview} from '../hooks/UseInterview'
 
 const Interview = () => {

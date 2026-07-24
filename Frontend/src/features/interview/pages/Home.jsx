@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react'
 import '../styles/home.scss'
-import { UseInterview } from '../hooks/UseInterview' // Standardized import casing
-import { useNavigate } from 'react-router'
+import { UseInterview } from '../hooks/UseInterview'
+import { useNavigate } from 'react-router-dom' // 👈 Fixed import here!
 
 const Home = () => {
   const { loading, generateReport, reports, getAllReport } = UseInterview()
   const [jobDescription, setJobDescription] = useState('')
-  const [selfDescription, setSelfDescription] = useState('') // Standard camelCase
-  const [selectedFile, setSelectedFile] = useState(null) // Added state to track file selection & display name
+  const [selfDescription, setSelfDescription] = useState('')
+  const [selectedFile, setSelectedFile] = useState(null)
   const resumeInputRef = useRef(null)
 
   const navigate = useNavigate()
@@ -75,7 +75,7 @@ const Home = () => {
             </p>
             <textarea
               value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)} // Fixed duplicate prop
+              onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Paste the full job description here, including responsibilities, requirements, and organizational context..."
             />
           </div>
@@ -114,7 +114,7 @@ const Home = () => {
               </p>
               <textarea
                 value={selfDescription}
-                onChange={(e) => setSelfDescription(e.target.value)} // Fixed variable name casing
+                onChange={(e) => setSelfDescription(e.target.value)}
                 placeholder="e.g., Aspiring software engineer specializing in full-stack development..."
               />
             </div>

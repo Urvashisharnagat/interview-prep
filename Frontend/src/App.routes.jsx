@@ -8,7 +8,7 @@ import Interview from "./features/interview/pages/Interview";
 import { AuthProvider } from "./features/auth/auth.context";
 import { InterviewProvider } from "./features/interview/Interview.context";
 
-// 🎯 Providers ko Router Context ke ANDAR wrap karne ke liye Layout
+// Root component providing Auth & Interview context inside the Router
 const RootLayout = () => {
     return (
         <AuthProvider>

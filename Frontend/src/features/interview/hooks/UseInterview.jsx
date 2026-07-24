@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect } from "react";
 import { InterviewContext } from "../Interview.context";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import {
   generateInterviewReport,
   getInterviewReport,

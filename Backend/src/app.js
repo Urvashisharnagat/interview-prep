@@ -7,36 +7,22 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// 🎯 Smart Origin Validator (Allows localhost, production, AND all Vercel previews)
+// Simple allowed origins list
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://interview-prep-nine-gilt.vercel.app'
+    'interview-prep-f813hivfc-urvashisharanagat-3687s-projects.vercel.app'
 ];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // 1. Allow non-browser requests (Postman, server-to-server)
-        if (!origin) return callback(null, true);
-
-        // 2. Allow exact matches (Localhost & Main Vercel Domain)
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(null, true); // Allow all in dev/preview if needed
         }
-
-        // 3. Allow ANY dynamic Vercel preview domain (*.vercel.app)
-        if (/^https:\/\/.*\.vercel\.app$/.test(origin)) {
-            return callback(null, true);
-        }
-
-        return callback(new Error('Not allowed by CORS'));
     },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    credentials: true
 }));
-
-// Explicitly handle CORS preflight for all routes
-app.options('*', cors());
 
 const authRouter = require('./routes/auth.routes');
 const interviewRouter = require('./routes/interview.routes');

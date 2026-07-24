@@ -133,25 +133,27 @@ async function generatePdfByHTML(htmlContent) {
 
   try {
     browser = await puppeteer.launch({
+      headless: 'new', // 👈 FIX 1: Render cloud container ke liye mandatory hai
       userDataDir: uniqueUserDataDir,
       args: [
         '--no-sandbox', 
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
-        '--disable-gpu'
+        '--disable-gpu',
+        '--single-process', // 👈 FIX 2: Render ki 512MB RAM limit ke andar rakhta hai
+        '--no-zygote'
       ]
     });
 
     const page = await browser.newPage();
     
-    // 1. Use 'load' instead of 'networkidle0' to avoid hanging on slow/broken assets
-    // 2. Set timeout explicitly to 0 (disabled) or a higher value if needed
+    // Aapka exact content setup logic (Strictly Unchanged)
     await page.setContent(htmlContent, { 
       waitUntil: 'load',
-      timeout: 15000 // 15 seconds max
+      timeout: 15000
     });
 
-    // Wait safely for any external Google Fonts to render without hanging the network
+    // Aapka fonts wait logic (Blank PDF prevention - Strictly Unchanged)
     await page.evaluateHandle('document.fonts.ready');
 
     const pdfBuffer = await page.pdf({
@@ -169,6 +171,12 @@ async function generatePdfByHTML(htmlContent) {
     if (browser) {
       await browser.close();
     }
+    // Safe folder cleanup (Crash-proof)
+    try {
+      if (fs.existsSync(uniqueUserDataDir)) {
+        fs.rmSync(uniqueUserDataDir, { recursive: true, force: true });
+      }
+    } catch (e) {}
   }
 }
 
