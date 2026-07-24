@@ -9,7 +9,7 @@ import {
 } from "../services/Interview.api";
 
 // 1. Removed `async` keyword here
-export const useInterview = () => {
+export const UseInterview = () => {
   // 2. Fixed variable name to match import (InterviewContext)
   const context = useContext(InterviewContext);
 

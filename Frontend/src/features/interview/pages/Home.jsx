@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import '../styles/home.scss'
-import { useInterview } from '../hooks/useInterview' // Standardized import casing
+import { UseInterview } from '../hooks/UseInterview' // Standardized import casing
 import { useNavigate } from 'react-router'
 
 const Home = () => {
-  const { loading, generateReport, reports, getAllReport } = useInterview()
+  const { loading, generateReport, reports, getAllReport } = UseInterview()
   const [jobDescription, setJobDescription] = useState('')
   const [selfDescription, setSelfDescription] = useState('') // Standard camelCase
   const [selectedFile, setSelectedFile] = useState(null) // Added state to track file selection & display name

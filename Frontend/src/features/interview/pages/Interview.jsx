@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import '../styles/interview.scss'
 import {useParams} from 'react-router'
-import {useInterview} from '../hooks/UseInterview'
+import {UseInterview} from '../hooks/UseInterview'
 
 const Interview = () => {
   const [activeTab, setActiveTab] = useState('behavioral')
   const [activeIndex, setActiveIndex] = useState(0)
 
   
-  const {report, getReport,generateResumePdfHook,loading} = useInterview()
+  const {report, getReport,generateResumePdfHook,loading} = UseInterview()
   const {reportID} = useParams()
   
 
